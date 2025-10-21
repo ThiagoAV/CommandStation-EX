@@ -103,7 +103,7 @@ void setup()
   DISPLAY_START (
     // This block is still executed for DIAGS if display not in use
     LCD(0,F("DCC-EX v" VERSION));
-    LCD(1,F("Lic GPLv3"));
+    // LCD(1,F("Lic GPLv3"));
   );
 
   // Responsibility 2: Start all the communications before the DCC engine

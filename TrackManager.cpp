@@ -51,6 +51,13 @@ int16_t TrackManager::joinRelay=UNUSED_PIN;
 byte TrackManager::tempProgTrack=MAX_TRACKS+1; // MAX_TRACKS+1 is the unused flag
 #endif
 
+// Controle de tempo para a exibição da corrente.
+#ifndef UPDATE_CURRENT_LOOP_INTERVAL
+  #define UPDATE_CURRENT_LOOP_INTERVAL 25000
+#endif
+
+long TrackManager::ticksFromLastTime = UPDATE_CURRENT_LOOP_INTERVAL;
+
 #ifdef ANALOG_READ_INTERRUPT
 /*
  * sampleCurrent() runs from Interrupt
@@ -512,6 +519,12 @@ void TrackManager::loop() {
     MotorDriver * motorDriver=track[nextCycleTrack];
     bool useProgLimit=dontLimitProg ? false : (bool)(track[nextCycleTrack]->getMode() & TRACK_MODE_PROG);
     motorDriver->checkPowerOverload(useProgLimit, nextCycleTrack);   
+
+    if (--ticksFromLastTime <= 0) {
+      ticksFromLastTime = UPDATE_CURRENT_LOOP_INTERVAL;
+
+      CommandDistributor::broadcastPower();
+    }
 }
 
 MotorDriver * TrackManager::getProgDriver() {

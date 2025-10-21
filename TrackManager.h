@@ -87,6 +87,7 @@ class TrackManager {
     static void sampleCurrent();
     static void reportGauges(Print* stream);
     static void reportCurrent(Print* stream);
+    static void reportCurrentToString(char* buffer, size_t bufferSize);
     static void reportObsoleteCurrent(Print* stream); 
     static void streamTrackState(Print* stream, byte t);
     static bool isPowerOn(byte t);
@@ -111,6 +112,7 @@ class TrackManager {
     static int8_t lastTrack;
     static byte nextCycleTrack;
     static void applyDCSpeed(byte t);
+    static long ticksFromLastTime;
 
     static int16_t trackDCAddr[MAX_TRACKS];  // dc address if TRACK_MODE_DC
 #ifdef ARDUINO_ARCH_ESP32

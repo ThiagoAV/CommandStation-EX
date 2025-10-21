@@ -306,8 +306,15 @@ void  CommandDistributor::broadcastPower() {
   // send '1' if all main are on, otherwise global state (which in that case is '0' or '2')
   broadcastReply(WITHROTTLE_TYPE, F("PPA%c\n"), main?'1': state);
 #endif
+  
+  char currentValues[64] = "0mA";
 
-  LCD(2,F("Power %S%S"),state=='1'?F("On"): ( state=='0'? F("Off") : F("SC") ),reason);
+  if (state != '0') {
+    TrackManager::reportCurrentToString(currentValues, sizeof(currentValues));
+  }
+
+  LCD(1,F("Power %S%S"),state=='1'?F("On"): ( state=='0'? F("Off") : F("SC") ),reason);
+  LCD(2,F("Current %s"), currentValues);
 }
 
 void CommandDistributor::broadcastRaw(clientType type, char * msg) {
