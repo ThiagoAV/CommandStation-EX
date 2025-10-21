@@ -656,6 +656,36 @@ void TrackManager::reportCurrent(Print* stream) {
     StringFormatter::send(stream,F(">\n"));    
 }
 
+void TrackManager::reportCurrentToString(char* buffer, size_t bufferSize) {
+    if (bufferSize == 0) return;
+    size_t len = 0;
+
+    FOR_EACH_TRACK(t) {
+        if (len >= bufferSize) break;
+        if (t>0) len += snprintf(buffer + len, bufferSize - len, " ");
+
+        int val = (track[t]->getPower() == POWERMODE::OVERLOAD)
+                    ? -1
+                    : track[t]->raw2mA(track[t]->getCurrentRaw(false));
+
+        int written = snprintf(buffer + len, bufferSize - len, "%dmA", val);
+        if (written < 0) break;
+        len += (size_t)written;
+
+        // Proteção contra overflow
+        if (len >= bufferSize) {
+            buffer[bufferSize - 1] = '\0';
+            break;
+        }
+    }
+
+    if (len < bufferSize - 2) {
+        snprintf(buffer + len, bufferSize - len, ".");
+    } else {
+        buffer[bufferSize - 1] = '\0';
+    }
+}
+
 void TrackManager::reportGauges(Print* stream) {
     StringFormatter::send(stream,F("<jG"));
     FOR_EACH_TRACK(t) {
